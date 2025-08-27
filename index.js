@@ -21,7 +21,7 @@ app.get('/healthz', (req, res) => res.json({ ok: true }))
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
-const MONGO_URI = process.env.MONGO_URI
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://Abduvohid:xoshimov_2010@cluster0.tmelrtu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 if (!MONGO_URI) {
 	console.error('❌ Missing MONGO_URL environment variable')
