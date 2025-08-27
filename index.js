@@ -21,15 +21,15 @@ app.get('/healthz', (req, res) => res.json({ ok: true }))
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
-const MONGO_URL = process.env.MONGO_URL
+const MONGO_URI = process.env.MONGO_URI
 
-if (!MONGO_URL) {
+if (!MONGO_URI) {
 	console.error('❌ Missing MONGO_URL environment variable')
 	process.exit(1)
 }
 
 mongoose
-	.connect(MONGO_URL)
+	.connect(MONGO_URI)
 	.then(() => {
 		console.log('✅ MongoDB connected')
 		app.listen(PORT, () => console.log(`🚀 Server on ${PORT}`))
