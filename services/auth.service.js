@@ -1,22 +1,15 @@
-// auth.service.js
-const User = require('../models/user.model')
+// services/auth.service.js
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const User = require('../models/user.model')
 
-exports.login = async ({ email, age }) => {
-	// find user by email
-	const user = await User.findOne({ email })
-	if (!user) {
-		throw new Error('User not found')
-	}
+exports.login = async ({ email, password }) => {
+	const user = await User.findOne({ email }).select('+password')
+	if (!user) throw new Error('User not found')
 
-	// check password
-	const isMatch = await bcrypt.compare(age, user.age)
-	if (!isMatch) {
-		throw new Error('Invalid credentials')
-	}
+	const isMatch = await bcrypt.compare(password, user.password)
+	if (!isMatch) throw new Error('Invalid credentials')
 
-	// create JWT token
 	const token = jwt.sign(
 		{ id: user._id, email: user.email },
 		process.env.JWT_SECRET,

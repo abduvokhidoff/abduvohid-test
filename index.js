@@ -1,50 +1,36 @@
+// index.js
 const express = require('express')
-const mongoose = require('mongoose')
 const dotenv = require('dotenv')
+const morgan = require('morgan')
+const helmet = require('helmet')
 const cors = require('cors')
+const connectDB = require('./config/database')
+const errorHandler = require('./middlewares/error.middleware')
 
 dotenv.config()
 
-// routes
-const userRoutes = require('./routes/user.route')
-const productRoutes = require('./routes/product.route')
-const carRoutes = require('./routes/car.route')
-const authRoutes = require('./routes/auth.routes') // 👈 add this
-const errorHandler = require('./middlewares/error.middleware')
-
 const app = express()
-app.use(cors())
 app.use(express.json())
+app.use(helmet())
+app.use(cors())
+app.use(morgan('dev'))
 
-// mount routes
-app.use('/api/users', userRoutes)
-app.use('/api/products', productRoutes)
-app.use('/api/cars', carRoutes)
-app.use('/api/auth', authRoutes) // 👈 add this
+app.get('/health', (req, res) => res.json({ ok: true }))
 
-// health check
-app.get('/healthz', (req, res) => res.json({ ok: true }))
+// routes
+app.use('/auth', require('./routes/auth.routes'))
+app.use('/cars', require('./routes/car.routes'))
+app.use('/users', require('./routes/user.routes')) // includes create user (admin) + CRUD
 
-// error handler
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3000
-const MONGO_URI =
-	process.env.MONGO_URI ||
-	'mongodb+srv://Abduvohid:xoshimov_2010@cluster0.tmelrtu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const PORT = process.env.PORT || 5000
 
-if (!MONGO_URI) {
-	console.error('❌ Missing MONGO_URI environment variable')
-	process.exit(1)
-}
-
-mongoose
-	.connect(MONGO_URI)
+connectDB(process.env.MONGO_URI)
 	.then(() => {
-		console.log('✅ MongoDB connected')
-		app.listen(PORT, () => console.log(`🚀 Server on ${PORT}`))
+		app.listen(PORT, () => console.log(`🚀 Listening on :${PORT}`))
 	})
 	.catch(err => {
-		console.error('❌ MongoDB connection error:', err.message)
+		console.error('❌ DB connect failed', err)
 		process.exit(1)
 	})

@@ -1,46 +1,50 @@
-const carService = require('../services/car.service')
+const Car = require('../models/car.model')
 
-exports.getAllCars = async (req, res, next) => {
+exports.create = async (req, res, next) => {
 	try {
-		const cars = await carService.getAll()
-		res.json(cars)
-	} catch (err) {
-		next(err)
-	}
-}
-
-exports.createCar = async (req, res, next) => {
-	try {
-		const car = await carService.create(req.body)
+		const car = await Car.create({ ...req.body, createdBy: req.user.id })
 		res.status(201).json(car)
 	} catch (err) {
 		next(err)
 	}
 }
 
-exports.getCarById = async (req, res, next) => {
+exports.list = async (_req, res, next) => {
 	try {
-		const car = await carService.getById(req.params.id)
-		if (!car) return res.status(404).json({ message: 'Car not found' })
+		const cars = await Car.find().populate('createdBy', 'name email')
+		res.json(cars)
+	} catch (err) {
+		next(err)
+	}
+}
+
+exports.get = async (req, res, next) => {
+	try {
+		const car = await Car.findById(req.params.id)
+		if (!car) return res.status(404).json({ message: 'Not found' })
 		res.json(car)
 	} catch (err) {
 		next(err)
 	}
 }
 
-exports.updateCar = async (req, res, next) => {
+exports.update = async (req, res, next) => {
 	try {
-		const updated = await carService.update(req.params.id, req.body)
-		res.json(updated)
+		const car = await Car.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+		})
+		if (!car) return res.status(404).json({ message: 'Not found' })
+		res.json(car)
 	} catch (err) {
 		next(err)
 	}
 }
 
-exports.deleteCar = async (req, res, next) => {
+exports.remove = async (req, res, next) => {
 	try {
-		await carService.remove(req.params.id)
-		res.json({ message: 'Car deleted' })
+		const car = await Car.findByIdAndDelete(req.params.id)
+		if (!car) return res.status(404).json({ message: 'Not found' })
+		res.json({ ok: true })
 	} catch (err) {
 		next(err)
 	}
