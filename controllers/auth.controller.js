@@ -3,8 +3,8 @@ const authService = require('../services/auth.service')
 
 exports.login = async (req, res) => {
 	try {
-		const { email, password } = req.body
-		const { user, token } = await authService.login({ email, password })
+		const { email, age } = req.body
+		const { user, token } = await authService.login({ email, age })
 
 		res.json({
 			message: 'Login successful',

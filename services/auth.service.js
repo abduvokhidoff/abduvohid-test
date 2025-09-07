@@ -3,7 +3,7 @@ const User = require('../models/user.model')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-exports.login = async ({ email, password }) => {
+exports.login = async ({ email, age }) => {
 	// find user by email
 	const user = await User.findOne({ email })
 	if (!user) {
@@ -11,7 +11,7 @@ exports.login = async ({ email, password }) => {
 	}
 
 	// check password
-	const isMatch = await bcrypt.compare(password, user.password)
+	const isMatch = await bcrypt.compare(age, user.age)
 	if (!isMatch) {
 		throw new Error('Invalid credentials')
 	}
