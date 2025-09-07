@@ -4,10 +4,10 @@ const userController = require('../controllers/user.controller')
 const { validateUser } = require('../middlewares/validation.middleware')
 
 // Routes
-router.get('/', userController.getAllUsers)
-router.post('/', validateUser, userController.createUser)
-router.get('/:id', userController.getUserById)
-router.put('/:id', validateUser, userController.updateUser)
-router.delete('/:id', userController.deleteUser)
+router.get('/', authUser, userController.getAllUsers)
+router.post('/', authUser, validateUser, userController.createUser)
+router.get('/:id', authUser, userController.getUserById)
+router.put('/:id', authUser, validateUser, userController.updateUser)
+router.delete('/:id', authUser, userController.deleteUser)
 
 module.exports = router
